@@ -1,0 +1,121 @@
+<div class="page">
+  <div class="toast" *ngIf="notice" [class.success]="notice.type === 'success'" [class.error]="notice.type === 'error'">
+    {{ notice.message }}
+  </div>
+
+  <header class="header">
+    <div>
+      <h1>Books Manager</h1>
+      
+    </div>
+    <div class="headerActions">
+      <span class="chip" *ngIf="editing">Editing #{{ editing.id }}</span>
+      <span class="chip muted" *ngIf="!editing">Ready</span>
+      <button class="btn secondary" type="button" (click)="refresh()" [disabled]="loading">
+      Refresh
+      </button>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2 class="cardTitle">{{ editing ? 'Edit book' : 'Add a book' }}</h2>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="grid">
+        <label>
+          <span>Title</span>
+          <input type="text" formControlName="title" placeholder="Clean Code" />
+          <small *ngIf="form.controls.title.touched && form.controls.title.invalid">Required</small>
+        </label>
+
+        <label>
+          <span>Author</span>
+          <input type="text" formControlName="author" placeholder="Robert C. Martin" />
+          <small *ngIf="form.controls.author.touched && form.controls.author.invalid">Required</small>
+        </label>
+
+        <label>
+          <span>ISBN</span>
+          <input type="text" formControlName="isbn" placeholder="9780132350884" />
+          <small *ngIf="form.controls.isbn.touched && form.controls.isbn.invalid">Required</small>
+        </label>
+
+        <label>
+          <span>Publication date</span>
+          <input type="date" formControlName="publicationDate" />
+          <small
+            *ngIf="form.controls.publicationDate.touched && form.controls.publicationDate.invalid"
+            >Required</small
+          >
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" [disabled]="saving || loading || form.invalid">
+          {{ editing ? 'Save changes' : 'Add book' }}
+        </button>
+        <button class="btn" type="button" (click)="startCreate()" [disabled]="saving || (!editing && form.pristine)">
+          Clear
+        </button>
+        <button class="btn secondary" type="button" (click)="cancelEdit()" *ngIf="editing" [disabled]="saving">
+          Cancel
+        </button>
+      </div>
+
+      <p class="muted" *ngIf="form.invalid">All fields are required.</p>
+    </form>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </section>
+
+  <section class="card">
+    <div class="cardHead">
+      <h2 class="cardTitle">Books</h2>
+      <div class="toolbar" *ngIf="books.length">
+        <input
+          class="search"
+          type="search"
+          placeholder="Search by title, author, ISBN…"
+          [(ngModel)]="query"
+        />
+        <span class="count">{{ visibleBooks.length }} / {{ books.length }}</span>
+      </div>
+    </div>
+
+    <p class="muted" *ngIf="loading">Loading…</p>
+
+    <div class="tableWrap" *ngIf="!loading">
+      <table class="table" *ngIf="visibleBooks.length; else empty">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="setSort('id')">ID <span class="arrow">{{ sortLabel('id') }}</span></th>
+            <th class="sortable" (click)="setSort('title')">Title <span class="arrow">{{ sortLabel('title') }}</span></th>
+            <th class="sortable" (click)="setSort('author')">Author <span class="arrow">{{ sortLabel('author') }}</span></th>
+            <th class="sortable" (click)="setSort('isbn')">ISBN <span class="arrow">{{ sortLabel('isbn') }}</span></th>
+            <th class="sortable" (click)="setSort('publicationDate')">Publication date <span class="arrow">{{ sortLabel('publicationDate') }}</span></th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of visibleBooks; trackBy: trackById">
+            <td>{{ b.id }}</td>
+            <td>{{ b.title }}</td>
+            <td>{{ b.author }}</td>
+            <td>{{ b.isbn }}</td>
+            <td>{{ b.publicationDate?.slice(0, 10) }}</td>
+            <td class="right">
+              <div class="rowActions">
+                <button class="btn small" type="button" (click)="startEdit(b)">Edit</button>
+                <button class="btn small danger" type="button" (click)="remove(b)">Delete</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #empty>
+        <p class="muted">{{ books.length ? 'No matches. Try a different search.' : 'No books yet. Add one above.' }}</p>
+      </ng-template>
+    </div>
+  </section>
+</div>
