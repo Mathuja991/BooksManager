@@ -41,7 +41,4 @@ UI: `http://localhost:4200`
 - `PUT /api/books/{id}` (update)
 - `DELETE /api/books/{id}` (delete)
 
-## Submission (links)
-1. Push this repo to GitHub/GitLab and share the repository link.
-2. Record a short screen capture showing CRUD in action (UI + Swagger/Postman optional).
-3. Upload the video to Google Drive/OneDrive/Loom/YouTube (unlisted) and share the accessible link.
+
